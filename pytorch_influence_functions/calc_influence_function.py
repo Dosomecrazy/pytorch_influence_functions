@@ -494,6 +494,7 @@ def calc_img_wise(config, model, train_loader, test_loader):
     influences_path = outdir.joinpath(f"influence_results_{test_start_index}_"
                                       f"{test_sample_num}.json")
     save_json(influences, influences_path)
+    return influences
 
 
 def calc_all_grad_then_test(config, model, train_loader, test_loader):
