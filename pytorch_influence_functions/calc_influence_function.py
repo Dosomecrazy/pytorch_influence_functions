@@ -422,9 +422,9 @@ def calc_img_wise(config, model, train_loader, test_loader):
 
     # If calculating the influence for a subset of the whole dataset,
     # calculate it evenly for the same number of samples from all classes.
-    # `test_start_index` is `False` when it hasn't been set by the user. It can
+    # `test_start_index` is `None` when it hasn't been set by the user. It can
     # also be set to `0`.
-    if test_sample_num and test_start_index is not False:
+    if test_sample_num and test_start_index is not None:
         test_dataset_iter_len = test_sample_num * config['num_classes']
         _, sample_list = get_dataset_sample_ids(test_sample_num, test_loader,
                                                 config['num_classes'],
@@ -447,7 +447,7 @@ def calc_img_wise(config, model, train_loader, test_loader):
     for j in range(test_dataset_iter_len):
         # If we calculate evenly per class, choose the test img indicies
         # from the sample_list instead
-        if test_sample_num and test_start_index:
+        if test_sample_num and test_start_index is not None:
             if j >= len(sample_list):
                 logging.warn("ERROR: the test sample id is out of index of the"
                              " defined test set. Jumping to next test sample.")
