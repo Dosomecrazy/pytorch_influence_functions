@@ -270,7 +270,8 @@ def calc_influence_function(train_dataset_size, grad_z_vecs=None,
                 ###################################
             ]) / train_dataset_size
         influences.append(tmp_influence)
-        display_progress("Calc. influence function: ", i, train_dataset_size)
+        if i % 1000 == 0:
+            display_progress("Calc. influence function: ", i, train_dataset_size)
 
     harmful = np.argsort(influences)
     helpful = harmful[::-1]
@@ -341,7 +342,8 @@ def calc_influence_single(model, train_loader, test_loader, test_id_num, gpu,
                 for k, j in zip(grad_z_vec, s_test_vec)
             ]) / train_dataset_size
         influences.append(tmp_influence)
-        display_progress("Calc. influence function: ", i, train_dataset_size)
+        if i % 1000 == 0:
+            display_progress("Calc. influence function: ", i, train_dataset_size)
 
     harmful = np.argsort(influences)
     helpful = harmful[::-1]
@@ -525,3 +527,4 @@ def calc_all_grad_then_test(config, model, train_loader, test_loader):
     influence_results['helpful'] = helpful
     influences_path = outdir.joinpath("influence_results.json")
     save_json(influence_results, influences_path)
+    return influence_results
