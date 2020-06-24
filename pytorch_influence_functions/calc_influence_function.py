@@ -146,7 +146,7 @@ def calc_grad_z(model, train_loader, save_pth=False, gpu=-1, start=0):
     return grad_zs, save_pth
 
 
-def load_s_test(s_test_dir=Path("./s_test/"), s_test_id=0, r_sample_size=10,
+def load_s_test(s_test_dir=Path("/share/home/verena/experiments/fancy/influence_out/s_test/"), s_test_id=0, r_sample_size=10,
                 train_dataset_size=-1):
     """Loads all s_test data required to calculate the influence function
     and returns a list of it.
@@ -170,7 +170,8 @@ def load_s_test(s_test_dir=Path("./s_test/"), s_test_id=0, r_sample_size=10,
 
     s_test = []
     logging.info(f"Loading s_test from: {s_test_dir} ...")
-    num_s_test_files = len(s_test_dir.glob("*.s_test"))
+    num_s_test_files = len(list(s_test_dir.glob("*.s_test")))
+    print("num_s_test_files:", num_s_test_files)
     if num_s_test_files != r_sample_size:
         logging.warn("Load Influence Data: number of s_test sample files"
                      " mismatches the available samples")
@@ -200,7 +201,7 @@ def load_s_test(s_test_dir=Path("./s_test/"), s_test_id=0, r_sample_size=10,
     return e_s_test, s_test
 
 
-def load_grad_z(grad_z_dir=Path("./grad_z/"), train_dataset_size=-1):
+def load_grad_z(grad_z_dir=Path("/share/home/verena/experiments/fancy/influence_out/grad_z/"), train_dataset_size=-1):
     """Loads all grad_z data required to calculate the influence function and
     returns it.
 
@@ -216,14 +217,14 @@ def load_grad_z(grad_z_dir=Path("./grad_z/"), train_dataset_size=-1):
 
     grad_z_vecs = []
     logging.info(f"Loading grad_z from: {grad_z_dir} ...")
-    available_grad_z_files = len(grad_z_dir.glob("*.grad_z"))
-    if available_grad_z_files != train_dataset_size:
+    available_grad_z_files = len(list(grad_z_dir.glob("*.grad_z")))
+    if available_grad_z_files != train_dataset_size and train_dataset_size != -1:
         logging.warn("Load Influence Data: number of grad_z files mismatches"
                      " the dataset size")
         if -1 == train_dataset_size:
             train_dataset_size = available_grad_z_files
     for i in range(train_dataset_size):
-        grad_z_vecs.append(torch.load(grad_z_dir / str(i) + ".grad_z"))
+        grad_z_vecs.append(torch.load(grad_z_dir / (str(i) + ".grad_z")))
         display_progress("grad_z files loaded: ", i, train_dataset_size)
 
     return grad_z_vecs
@@ -245,6 +246,7 @@ def calc_influence_function(train_dataset_size, grad_z_vecs=None,
         harmful: list of float, influences sorted by harmfulness
         helpful: list of float, influences sorted by helpfulness"""
     if not grad_z_vecs and not e_s_test:
+        grad_z_vecs = load_grad_z()
         grad_z_vecs = load_grad_z()
         e_s_test, _ = load_s_test(train_dataset_size=train_dataset_size)
 
